@@ -1,0 +1,21 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+solc = "0.8.20"
+evm_version = "paris"
+test = "test"
+
+[profile.mantle]
+src = "src"
+out = "out"
+libs = ["lib"]
+solc = "0.8.20"
+evm_version = "paris"
+# Mantle Mainnet Fork
+# Usage: --rpc-url mantle-mainnet
+# or: forge test --match-path pocs/Exploit_PoC.t.sol --fork-url $MANTLE_RPC
+[rpc_endpoints]
+mantle-mainnet = "${MANTLE_RPC_URL}"
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

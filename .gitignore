@@ -1,0 +1,48 @@
+# Compiler files
+cache/
+out/
+
+# Broadcast logs
+broadcast/
+!/broadcast
+/broadcast/*/31337/
+/broadcast/**/dry-run/
+
+# Project directories
+.agents/
+.github/
+
+# Per-audit auto-generated agent pipeline output
+audits/*/agents/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Coverage
+lcov.info
+lcov-report/
+coverage/
+coverage.json
+
+# Security tool outputs
+slither.db
+mythril/
+certora/confirmed/
+certora/out/
+
+# Forge local artifacts
+forge-cache/
+broadcast-backup/

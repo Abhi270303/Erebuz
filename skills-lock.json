@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "web3-dev": {
+      "source": "blockscout/agent-skills",
+      "sourceType": "github",
+      "skillPath": "web3-dev/SKILL.md",
+      "computedHash": "38b6e209f3242fabde1ecfa24f413ceb4f5ced2c7c08e307fcf004b1e4e812ca"
+    }
+  }
+}
