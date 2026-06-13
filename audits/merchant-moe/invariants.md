@@ -19,7 +19,7 @@
 ### Mint/Burn Invariants
 1. Shares must be minted proportionally to deposited liquidity relative to total liquidity per bin
 2. `burn()` must return proportionally equal value to `shares/totalSupply` of each bin
-3. Composition fee must be charged when adding to active bin with skewed composition ratio
+3. Composition fee must be charged when adding to active bin with skewed composition ratio — **DEAD BRANCH (always zero)**
 4. Adding to non-active bins must only accept one token type (X for higher bins, Y for lower bins)
 5. `supply == 0` → bin added to tree; `supply == amountToBurn` → bin removed from tree
 
@@ -29,19 +29,28 @@
 3. Variable fee = (volAcc * binStep)^2 * variableFeeControl / 100
 4. Protocol share = max 25% of total fees (BASIS_POINT_MAX = 10_000)
 5. Flash loan fee = max 10%
-6. Composition fee = imbalance * totalFee * (totalFee + PRECISION) / PRECISION^2
+6. Composition fee = imbalance * totalFee * (totalFee + PRECISION) / PRECISION^2 — **always zero due to unreachable path**
 
 ### Security Invariants (MUST always hold)
-1. NO check on who calls swap beyond reentrancy guard - any address can initiate a swap
-2. NO check on who calls mint - any address can mint liquidity (assuming tokens are transferred)
+1. NO check on who calls swap beyond reentrancy guard — any address can initiate a swap
+2. NO check on who calls mint — any address can mint liquidity (assuming tokens are transferred)
 3. NO access control on burn (beyond approval check)
 4. Flash loan only checks final balance >= initial reserves + expected fee
 5. The `amountsLeft` refund in mint goes to `refundTo` parameter (user-controlled)
 6. The `to` parameter in swap is user-controlled (can be any address)
 
 ## Missing / Unenforced Invariants (Attack Vectors)
-1. **No min/max swap amount check** - partial fills are allowed with rounding dust
-2. **No balance snapshot** before swap - relies entirely on balanceOf() difference
-3. **Composition fee rounding** - `getCompositionFee` uses `mulDivRoundDown` which rounds in favor of the swapper
-4. **Protocol fee rounding** - `scalarMulDivBasisPointRoundDown` rounds protocol fee DOWN, not up
-5. **The `ones` dust in collectProtocolFees** - 1 wei per token is always left in protocol fees
+
+| # | Invariant | Issue | Severity |
+|---|-----------|-------|----------|
+| 1 | `sqrt` first-deposit should burn MINIMUM_LIQUIDITY | First depositor can inflate share price | HIGH |
+| 2 | `veMoe.maxVeMoe` should use `newBalance`, not `oldBalance` | Users lose veMoe on incremental stakes | MEDIUM |
+| 3 | `vote()` should reject duplicate PIDs | Flash vote+unvote for bribes | MEDIUM |
+| 4 | `amountsReceived` should exclude unaccounted balance | Donations captured by next minter | MEDIUM |
+| 5 | `after*` hooks should be inside reentrancy guard | Hooks can re-enter pair | LOW |
+| 6 | `vote()` needs reentrancy guard against `setBribes` | Malicious bribe reentrancy | LOW |
+| 7 | No min/max swap amount check | Partial fills with rounding dust | INFO |
+| 8 | No balance snapshot before swap | Relies entirely on balanceOf() difference | INFO |
+| 9 | Composition fee rounding DOWN | Path unreachable — no impact | DEFERRED |
+| 10 | Protocol fee rounding DOWN (`scalarMulDivBasisPointRoundDown`) | Small dust left in protocol fees | INFO |
+| 11 | `ones` dust in `collectProtocolFees` | 1 wei per token always left | INFO |

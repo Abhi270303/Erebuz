@@ -7,41 +7,50 @@ Comprehensive security audit of Merchant Moe's Liquidity Book protocol (Trader J
 
 | ID | Severity | Title | Status |
 |----|----------|-------|--------|
-| C-01 | CRITICAL | `getCompositionFee` rounds DOWN to zero - fee-free implicit swaps | Confirmed (PoC) |
-| C-02 | CRITICAL | "Compensation for Composition" - fee not in liquidity denominator | Confirmed |
-| M-01 | MEDIUM | Swap fee (UP) vs Composition fee (DOWN) inconsistency | Confirmed (PoC) |
-| M-02 | MEDIUM | Flash loan fee check uses single packed comparison | Confirmed |
-| M-03 | MEDIUM | `_reserves` vs `_bins[]` can desynchronize | Confirmed |
-| L-01 | LOW | Direct donation inflates swap input | Confirmed |
-| L-02 | LOW | Phantom 1 wei in protocol fees | Confirmed |
+| C-01 | CRITICAL | `getCompositionFee` rounds DOWN — **path unreachable in v2.1** | Deferred (math proof) |
+| H-01 | HIGH | First-deposit sqrt in `getSharesAndEffectiveAmountsIn` lacks MINIMUM_LIQUIDITY burn | Confirmed |
+| M-01 | MEDIUM | `VeMoe._getVeMoe` cap uses `oldBalance` instead of `newBalance` | Confirmed |
+| M-02 | MEDIUM | Duplicate PID in `vote()` enables flash vote+unvote bribe extraction | Confirmed |
+| M-03 | MEDIUM | Direct token transfers to LB pairs extractable by next minter | Confirmed |
+| L-01 | LOW | Hooks `after*` callbacks outside reentrancy guard | Confirmed |
+| L-02 | LOW | `VeMoe._vote` reentrancy via `bribe.onModify` → `setBribes` | Confirmed |
 
-## PoC Results
-All 8 Foundry tests pass, proving:
-- Composition fee rounds to ZERO for imbalances below threshold
-- 100 exploit cycles execute with ZERO composition fees collected
-- Swap fees (round UP) vs composition fees (round DOWN) inconsistency
-- Exact mathematical threshold derivation
+## Key Findings Detail
 
-## Critical Exploit Chain
-1. Flash loan a large amount of tokens
-2. Exploit C-01: deposit skewed composition - fee rounds to 0
-3. Exploit C-02: get inflated LP shares (fee not in denominator)
-4. Remove liquidity - extract value from existing LPs
-5. Repeat across all pools
-6. Repay flash loan
+### H-01: First-Deposit Inflation Attack (no MINIMUM_LIQUIDITY)
+`BinHelper.sol:84` — `shares = sqrt(userLiquidity)` when bin total supply is 0. No MINIMUM_LIQUIDITY burn (Uniswap V2 burns `10**3`). First depositor can inflate share price. Donation to pair backfires — the donation is refunded to the next minter, not the first depositor. Pair also lacks a `skim()` function.
 
-## Key Contracts Analyzed
-- `/tmp/joe-v2/src/LBPair.sol` (1107 lines) - Core swap logic
-- `/tmp/joe-v2/src/LBRouter.sol` (1135 lines) - Router
-- `/tmp/joe-v2/src/LBFactory.sol` (756 lines) - Factory
-- `/tmp/joe-v2/src/LBToken.sol` (244 lines) - LP tokens
-- `/tmp/joe-v2/src/libraries/FeeHelper.sol` - Fee calculation (vulnerable)
-- `/tmp/joe-v2/src/libraries/BinHelper.sol` - Composition fee (vulnerable)
-- `/tmp/joe-v2/src/libraries/PairParameterHelper.sol` - Fee parameters
-- `/tmp/moe-core/src/MasterChef.sol` - Staking rewards
-- `/tmp/moe-core/src/MoeStaking.sol` - MOE staking
-- `/tmp/moe-core/src/VeMoe.sol` - Voting escrow
-- `/tmp/lb-rewarder/src/LBHooksBaseRewarder.sol` - Hooks rewarder
+### M-01: veMoe Cap Bug
+`VeMoe.sol:646` — `maxVeMoe = oldBalance * M` instead of `newBalance * M` when staking more MOE. Users who stake incrementally get permanently less veMoe. Loss-only, not inflatable.
+
+### M-02: Flash Vote+Unvote
+`VeMoe.sol:333` — No duplicate PID check. `vote([X,X], [+N,-N])` triggers two bribe `onModify` calls with zero net voting, enabling bribe extraction without contributing votes.
+
+### M-03: Donation Extraction
+`LBPair.sol:671` — `amountsReceived = balanceOf - reserve`. Direct transfers to the pair inflate `amountsReceived`; excess `amountsLeft` is refunded to the minter.
+
+## No Critical Drain Found
+- **Composition fee** (C-01): mathematically unreachable — fee is always zero
+- **VeMoe flash loan voting**: prevented by time-based veMoe accrual
+- **MasterChef rewards**: standard accDebtPerShare pattern, correct
+- **MoePair/MoeRouter**: standard Uniswap V2 clone, battle-tested
+- **LB swap rounding**: `mulDivRoundDown` always rounds in pool's favor
+
+## Contracts Analyzed
+- `/tmp/joe-v2/src/LBPair.sol` (1107 lines) — Core swap/mint/burn
+- `/tmp/joe-v2/src/LBRouter.sol` (1135 lines) — Swap routing
+- `/tmp/joe-v2/src/LBFactory.sol` (756 lines) — Pair factory
+- `/tmp/joe-v2/src/LBToken.sol` (244 lines) — LP tokens (ERC-1155)
+- `/tmp/joe-v2/src/libraries/BinHelper.sol` — Share/fee calculation
+- `/tmp/joe-v2/src/libraries/FeeHelper.sol` — Fee math
+- `/tmp/moe-core/src/MasterChef.sol` — Staking rewards
+- `/tmp/moe-core/src/MoeStaking.sol` — MOE staking
+- `/tmp/moe-core/src/VeMoe.sol` — Vote-escrowed MOE
+- `/tmp/moe-core/src/Moe.sol` — MOE token
+- `/tmp/moe-core/src/dex/MoePair.sol` — Traditional AMM (Uniswap V2 clone)
+- `/tmp/lb-rewarder/src/LBHooksBaseRewarder.sol` — Reward hook
+- `/tmp/lb-rewarder/src/LBHooksMCRewarder.sol` — MasterChef rewarder
+- `/tmp/lb-rewarder/src/LBHooksManager.sol` — Hook manager
 
 ## PoC Location
 `/Users/0xabhii/defi-audits/audits/merchant-moe/test/Exploit_PoC.t.sol`
@@ -50,4 +59,4 @@ All 8 Foundry tests pass, proving:
 - [Code4rena Trader Joe v2 Report](https://code4rena.com/reports/2022-10-traderjoe)
 - [Offside Labs - "Compensation for Composition"](https://blog.offside.io/p/compensation-for-composition)
 - [Merchant Moe Docs](https://docs.merchantmoe.com/resources/contracts)
-- [Marchent Moe Audits](https://docs.merchantmoe.com/resources/audits)
+- [Merchant Moe Audits](https://docs.merchantmoe.com/resources/audits)

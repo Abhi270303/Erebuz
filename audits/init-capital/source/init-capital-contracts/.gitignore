@@ -1,0 +1,14 @@
+__pycache__
+build/
+cache/
+node_modules/
+.vscode/
+.build/
+out/
+.DS_Store
+.build/
+venv/
+out/
+lib/
+.env
+.hypothesis/

@@ -1,0 +1,42 @@
+{
+  "5000": [
+    {
+      "id": "5000-init-mETHNeutralLoopingHook",
+      "name": "mETH Looping Hook",
+      "protocol": "INIT",
+      "url": "https://app.init.capital/mantle/hooks/looping/0x5071c003bb45e49110a905c1915ebdd2383a89df",
+      "contractAddress": "0x5071c003bb45e49110a905c1915ebdd2383a89df",
+      "logoUrl": "https://app.init.capital/static/icons/protocols/init.svg",
+      "type": "LOOPING",
+      "supportedAssets": [
+        "0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111",
+        "0xcDA86A272531e8640cD7F1a92c01839911B90bb0"
+      ],
+      "description": "Open a leveraged mETH position by depositing ETH or mETH, and borrow ETH up to 5x",
+      "apyEndpoint": "",
+      "fee": ""
+    },
+    {
+      "id": "5000-1delta-1deltaHook",
+      "name": "1delta Hook",
+      "protocol": "1delta.io",
+      "url": "https://app.1delta.io/margin?chain=mantle&lender=init&inputCurrency=0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9",
+      "contractAddress": "0xc08BFef7E778f3519D79E96780b77066F5d4FCC0",
+      "logoUrl": "https://assets-1delta.s3.eu-central-1.amazonaws.com/1delta.svg",
+      "type": "MARGIN_TRADING",
+      "supportedAssets": [
+        "0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111",
+        "0xcDA86A272531e8640cD7F1a92c01839911B90bb0",
+        "0xCAbAE6f6Ea1ecaB08Ad02fE02ce9A44F09aebfA2",
+        "0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8",
+        "0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9",
+        "0x201EBa5CC46D216Ce6DC03F6a759e8E766e956aE",
+        "0x5bE26527e817998A7206475496fDE1E68957c5A6"
+      ],
+      "description": "Universal leveraged trading",
+      "apyEndpoint": "",
+      "fee": ""
+    }
+  ],
+  "81457": []
+}

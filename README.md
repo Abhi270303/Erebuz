@@ -10,7 +10,9 @@ A curated collection of independent smart contract security audits for DeFi prot
 | [FanTech](audits/fan-tech/) | Mantle | 4 | 4 | Complete |
 | [FusionX V3](audits/fusionx-v3/) | Mantle | 2 H, 14 M, 6 L, 2 I | 24 | Complete |
 | [Lendle Pooled Markets](audits/lendle-pooled-markets/) | Mantle | 5 H, 3 M, 3 L | 11 | Complete |
-| [Merchant Moe](audits/merchant-moe/) | Mantle | 1 C | 1 | In progress |
+| [Init Capital](audits/init-capital/) | — | — | — | Recon |
+| [Merchant Moe](audits/merchant-moe/) | Mantle | 1 C, 1 H, 3 M, 2 L | 7 | Complete |
+| [Treehouse Protocol](audits/treehouse-protocol/) | — | — | — | Recon |
 
 ### Severity Key
 - **H** — High (critical, direct fund loss)
