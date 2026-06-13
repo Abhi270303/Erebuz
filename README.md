@@ -1,66 +1,65 @@
-## Foundry
+# Defi-Audits
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+A curated collection of independent smart contract security audits for DeFi protocols on EVM chains. Each audit includes a full recon, threat model, vulnerability findings with PoC exploit code, and fix recommendations.
 
-Foundry consists of:
+## Audits
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+| Protocol | Chain | Severity | Findings | Status |
+|---|---|---|---|---|
+| [Agni Finance V3](audits/agni-finance/) | Mantle | 3 H, 3 M, 4 L, 2 I | 12 | Complete |
+| [FanTech](audits/fan-tech/) | Mantle | 4 | 4 | Complete |
+| [FusionX V3](audits/fusionx-v3/) | Mantle | 2 H, 14 M, 6 L, 2 I | 24 | Complete |
+| [Lendle Pooled Markets](audits/lendle-pooled-markets/) | Mantle | 5 H, 3 M, 3 L | 11 | Complete |
+| [Merchant Moe](audits/merchant-moe/) | Mantle | 1 C | 1 | In progress |
 
-## Documentation
+### Severity Key
+- **H** — High (critical, direct fund loss)
+- **M** — Medium (broken logic/conditions)
+- **L** — Low (best practice / informational)
+- **I** — Informational
+- **C** — Critical (ongoing assessment)
 
-https://book.getfoundry.sh/
+## Structure
 
-## Usage
-
-### Build
-
-```shell
-$ forge build
+```
+audits/<protocol>/
+├── recon.md              # Reconnaissance & scope
+├── invariants.md         # Protocol invariants & properties
+├── integration-map.md    # Dependency & integration mapping
+├── audit-log.md          # Timeline & methodology log
+├── issues/               # Individual finding reports
+├── source/               # Audited source code (fetched from chain / repo)
+├── pocs/                 # Foundry PoC exploit test suites
+│   └── test/             # Forge test files (forge test -vvv)
+├── research/             # Background research (docs, audits, repos)
+└── agents/               # (gitignored) Auto-generated pipeline output
 ```
 
-### Test
+Root-level `test/` contains integration fork-tests for live protocols.
 
-```shell
-$ forge test
+## Quickstart
+
+```bash
+forge build
+forge test -vvv
+
+# Run a specific audit's PoC
+forge test --root audits/agni-finance/pocs -vvv
 ```
 
-### Format
+Requires [Foundry](https://book.getfoundry.sh/).
 
-```shell
-$ forge fmt
-```
+## Methodology
 
-### Gas Snapshots
+Each audit follows a multi-lens approach:
 
-```shell
-$ forge snapshot
-```
+1. **Recon** — Scope definition, contract enumeration, privilege mapping
+2. **Threat model** — Entry points, assets, trust boundaries, attack tree
+3. **Parallel hunt** — 5 agents running independently (Pashov, Trail of Bits, Forefy, Solodit historical lens, invariant fuzzing)
+4. **Convergence** — Lead deduplication, corroboration scoring, severity calibration
+5. **PoC development** — Foundry fork-test reproduction of each exploit path
+6. **Remediation** — Fix recommendations per finding
 
-### Anvil
+## Disclaimer
 
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+These audits were performed as independent security reviews. They do not constitute a formal audit or guarantee the absence of vulnerabilities. Always exercise caution when interacting with DeFi protocols.
