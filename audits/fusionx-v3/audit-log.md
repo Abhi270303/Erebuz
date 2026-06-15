@@ -25,8 +25,9 @@
 - **6 Low** — L-01 through L-06
 - **2 Info** — I-01, I-02
 
-### Off-Chain (Web / Dapp) — 2026-06-15
-- **2 Medium** — M-15 (Missing CSP enables GTM-driven wallet drainer), M-16 (PancakeSwap fork — shared frontend vulns)
+### Off-Chain (Web / Social Engineering) — 2026-06-15
+- **4 High** — H-01, H-02 (on-chain), H-03 (DMARC/DKIM → email spoofing), H-04 (Fake FSX token scams)
+- **3 Medium** — M-15 (Missing CSP enables GTM-driven wallet drainer), M-16 (PancakeSwap fork — shared frontend vulns), M-17 (Community channel impersonation)
 - **3 Low** — L-07 (Missing security headers), L-08 (No security contact), L-09 (Potential source map disclosure)
 - **2 Info** — I-03 (Hardcoded addresses in bundle), I-04 (Coverage gaps)
 
@@ -55,5 +56,12 @@ Step 5: unwrapWETH9(0, attacker) → drains ALL ETH
 - **pentagi**: 3 leads — GTM→wallet drainer chain, subgraph enumeration, fork inheritance
 - **pentestgpt**: 2 leads — coverage gaps, lead verification
 
+### Social Engineering Audit — 2026-06-15
+- **social-engineering-audit**: 4 findings — H-03 (DMARC/DKIM missing → email spoofing), H-04 (Fake FSX token impersonation), M-17 (Community channel impersonation), SE-004 (No security contact — redundant with L-08)
+- **2 High, 1 Medium** — email phishing + fake token scams are the highest social engineering risks
+
 ### Key off-chain finding
 **M-15**: Missing Content-Security-Policy + Google Tag Manager = wallet drainer injection surface. Corroborated by 4 agents. This is the highest-risk off-chain finding and should be prioritized for remediation (add CSP header).
+
+### Key social engineering finding
+**H-03**: Missing DMARC/DKIM — anyone can spoof @fusionx.finance email. Combined with M-15 (GTM injection vector), an attacker could deliver a wallet drainer via a convincing phishing email from the legitimate domain.

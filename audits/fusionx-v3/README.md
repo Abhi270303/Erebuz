@@ -15,13 +15,14 @@
 | Info | 2 (I-01, I-02) |
 | **Total** | **24** |
 
-### Off-Chain (Web / Dapp)
+### Off-Chain (Web / Social Engineering)
 | Severity | Count | Key Finding |
 |----------|-------|-------------|
-| Medium | 2 | M-15: Missing CSP enables GTM wallet drainer; M-16: PancakeSwap fork review needed |
+| High | 2 | H-03: DMARC/DKIM missing → email spoofing; H-04: Fake FSX token scams |
+| Medium | 3 | M-15: Missing CSP enables GTM wallet drainer; M-16: PancakeSwap fork review needed; M-17: Community channel impersonation |
 | Low | 3 | L-07: Missing security headers; L-08: No security contact; L-09: Source map disclosure |
 | Info | 2 | I-03: Hardcoded addresses; I-04: Coverage gaps |
-| **Total** | **7** | |
+| **Total** | **10** | |
 
 ## Key Exploit Chain (On-Chain)
 1. Donate 1 wei RFSX to MasterChef (no tracked amount increase)
@@ -31,7 +32,7 @@
 5. `unwrapWETH9(0, attacker)` → drains ALL ETH
 
 ## Key Off-Chain Risk
-Missing Content-Security-Policy header + Google Tag Manager = wallet drainer injection surface if GTM is compromised. Corroborated by 4 independent agents.
+**H-03**: Missing DMARC/DKIM — anyone can spoof @fusionx.finance email. Combined with M-15 (GTM injection vector), an attacker could deliver a wallet drainer via a convincing phishing email from the legitimate domain.
 
 ## Key Links
 - Website: https://fusionx.finance/
@@ -45,3 +46,6 @@ x-ray, pashov, trailofbits, forefy, solodit, invariant, converge
 
 ## Agents Run (Off-Chain Swarm)
 pentestswarm, cai, hexstrike, pentagi, pentestgpt, converge
+
+## Agents Run (Social Engineering)
+social-engineering-audit
