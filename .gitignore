@@ -11,6 +11,7 @@ broadcast/
 # Project directories
 .agents/
 .github/
+.opencode/
 
 # Per-audit auto-generated agent pipeline output
 audits/*/agents/

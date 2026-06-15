@@ -16,3 +16,6 @@
 [submodule "audits/agni-finance/pocs/lib/forge-std"]
 	path = audits/agni-finance/pocs/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "audits/TropicalSwap/pocs/lib/forge-std"]
+	path = audits/TropicalSwap/pocs/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
