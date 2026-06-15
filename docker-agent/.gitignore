@@ -1,0 +1,5 @@
+# Audit outputs (host-side bind mount).
+out/
+
+# NOTE: docker/skills, docker/mcp, docker/agents are intentionally COMMITTED
+# so the image is self-contained and builds anywhere. Do not ignore them.

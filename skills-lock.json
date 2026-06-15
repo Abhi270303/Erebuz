@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "solidity-auditor": {
+      "source": "pashov/skills",
+      "sourceType": "github",
+      "skillPath": "solidity-auditor/SKILL.md",
+      "computedHash": "30520e29d67753d3594dbab73202fe96d1cd8679c93438c5027f3b2c51f8140b"
+    },
     "web3-dev": {
       "source": "blockscout/agent-skills",
       "sourceType": "github",

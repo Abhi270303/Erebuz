@@ -1,0 +1,30 @@
+# DeFi auditing agent — hosted HTTP service.
+#
+#   docker compose --env-file ../.env up --build      # start the API on :8080
+#   docker compose run --rm auditor audit aave-v3      # one-shot CLI audit
+#
+# Reports persist in ./out/audits on the host.
+services:
+  auditor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: defi-auditor:latest
+    env_file:
+      - ../.env
+    environment:
+      # Verify the exact id with `opencode models`; this is just an example.
+      OPENCODE_MODEL: ${OPENCODE_MODEL:-anthropic/claude-sonnet-4-6}
+      AUDIT_API_TOKEN: ${AUDIT_API_TOKEN:-}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./out/audits:/work/audits
+    command: ["serve"]
+    restart: unless-stopped
+    # Audits are CPU/RAM hungry (parallel swarm + forge). Tune to your host.
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: 8g

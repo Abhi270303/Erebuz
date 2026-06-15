@@ -1,0 +1,11 @@
+# Not needed inside the image.
+out/
+build.sh
+prepare.sh
+docker-compose.yml
+.gitignore
+.dockerignore
+**/__pycache__
+**/*.pyc
+**/.DS_Store
+**/node_modules

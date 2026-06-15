@@ -1,8 +1,40 @@
-# Defi-Audits
+# Erebuz
 
-A curated collection of independent smart contract security audits for DeFi protocols on EVM chains. Each audit includes a full recon, threat model, vulnerability findings with PoC exploit code, and fix recommendations.
+**Erebuz** is an autonomous, multi-agent smart contract security audit pipeline. It orchestrates a swarm of specialized AI agents that work in parallel to find vulnerabilities in deployed DeFi protocols, then converges their findings into validated, severity-ranked security reports with executable Foundry proof-of-concept tests.
 
-## Audits
+The audit results in `audits/` are outputs produced by running this pipeline.
+
+## Running
+
+The [`docker-agent/`](docker-agent/) folder contains a self-contained Docker image with everything needed: opencode runtime, Foundry, MCP servers, and the full hunter swarm.
+
+```bash
+cd docker-agent
+cp .env.example .env   # fill in your API keys
+./build.sh
+docker run --rm --env-file .env -v "$PWD/out:/work/audits" \
+  defi-auditor:latest audit <target>
+```
+
+For detailed instructions — CLI one-shot, HTTP service, config, debugging, architecture — see [`docker-agent/DOCKER-AUDITING-AGENT.md`](docker-agent/DOCKER-AUDITING-AGENT.md). For the full pipeline spec see [`erebuz-context.md`](erebuz-context.md).
+
+## Pipeline Overview
+
+| Phase | Step |
+|---|---|
+| 0 | Workspace scaffold |
+| 1 | Target discovery (DeFiLlama PRs) |
+| 2 | Project research (docs, TVL, upgradeability) |
+| 3 | Source acquisition (block explorers, proxy resolution, bytecode decompile) |
+| 4 | Invariants & audited-vs-deployed diff |
+| 5 | Bug hunting swarm (x-ray → 5 hunters in parallel → converge) |
+| 6 | Solodit historical bug research |
+| 7 | Finding document generation |
+| 8 | Integration mapping & issue chaining |
+| 9 | Foundry fork-test PoCs |
+| 10 | Report assembly |
+
+## Outputs from Past Runs
 
 | Protocol | Chain | Severity | Findings | Status |
 |---|---|---|---|---|
@@ -15,13 +47,13 @@ A curated collection of independent smart contract security audits for DeFi prot
 | [Treehouse Protocol](audits/treehouse-protocol/) | — | — | — | Recon |
 
 ### Severity Key
-- **H** — High (critical, direct fund loss)
+- **C** — Critical
+- **H** — High (direct fund loss)
 - **M** — Medium (broken logic/conditions)
 - **L** — Low (best practice / informational)
 - **I** — Informational
-- **C** — Critical (ongoing assessment)
 
-## Structure
+## Audit Directory Structure
 
 ```
 audits/<protocol>/
@@ -36,8 +68,6 @@ audits/<protocol>/
 ├── research/             # Background research (docs, audits, repos)
 └── agents/               # (gitignored) Auto-generated pipeline output
 ```
-
-Root-level `test/` contains integration fork-tests for live protocols.
 
 ## Quickstart
 
